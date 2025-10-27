@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LocalPro - Verified Local Worker System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        .worker-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .worker-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .rating-stars {
+            color: #fbbf24;
+        }
+        
+        .verification-badge {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        
+        .notification {
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .progress-bar {
+            transition: width 0.3s ease;
+        }
+        
+        .skill-tag {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-purple-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg border-b-4 border-blue-600">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center">
+                        <svg class="w-8 h-8 text-blue-600 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
+                        <span class="text-xl font-bold text-gray-800">LocalPro</span>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <button onclick="showPage('dashboard')" class="nav-btn text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md font-medium transition-colors">Dashboard</button>
+                    <button onclick="showPage('workers')" class="nav-btn text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md font-medium transition-colors">Find Workers</button>
+                    <button onclick="showPage('jobs')" class="nav-btn text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md font-medium transition-colors">Job Board</button>
+                    <button onclick="showPage('verification')" class="nav-btn text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md font-medium transition-colors">Verification</button>
+                    <button onclick="showPage('profile')" class="nav-btn text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md font-medium transition-colors">My Profile</button>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                            <span class="text-white text-sm font-medium">AC</span>
+                        </div>
+                        <span class="text-gray-700 text-sm">Kirtan Tandel</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Page -->
+    <div id="dashboard" class="page-content">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">Welcome to LocalPro</h1>
+                <p class="text-gray-600">Connect with verified local workers and quality services</p>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-green-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Verified Workers</p>
+                            <p class="text-3xl font-bold text-gray-900">1,247</p>
+                        </div>
+                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-blue-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Active Jobs</p>
+                            <p class="text-3xl font-bold text-gray-900">89</p>
+                        </div>
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2V6"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-purple-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Completed Jobs</p>
+                            <p class="text-3xl font-bold text-gray-900">3,456</p>
+                        </div>
+                        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-purple-600" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-yellow-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Avg Rating</p>
+                            <p class="text-3xl font-bold text-gray-900">4.8</p>
+                        </div>
+                        <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-yellow-600" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Featured Workers & Recent Activity -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Top Rated Workers</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
+                            <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center">
+                                <span class="text-white font-medium">KT</span>
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-medium text-gray-900">Kirtan Tandel</p>
+                                <p class="text-sm text-gray-600">Plumber • 5.0 ⭐ • $45/hr</p>
+                            </div>
+                            <div class="verification-badge">
+                                <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
+                            <div class="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center">
+                                <span class="text-white font-medium">JP</span>
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-medium text-gray-900">Joy Patel</p>
+                                <p class="text-sm text-gray-600">Electrician • 4.9 ⭐ • $55/hr</p>
+                            </div>
+                            <div class="verification-badge">
+                                <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
+                            <div class="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center">
+                                <span class="text-white font-medium">VA</span>
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-medium text-gray-900">Vansh Ahir
+                                </p>
+                                <p class="text-sm text-gray-600">Carpenter • 4.8 ⭐ • $40/hr</p>
+                            </div>
+                            <div class="verification-badge">
+                                <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-start space-x-3">
+                            <div class="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">Job completed by Kirtan Tandel</p>
+                                <p class="text-xs text-gray-500">Kitchen sink repair • 2 hours ago</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3">
+                            <div class="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">New worker verified</p>
+                                <p class="text-xs text-gray-500">Joy Patel - House Cleaner • 4 hours ago</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3">
+                            <div class="w-2 h-2 bg-purple-500 rounded-full mt-2"></div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">Job posted</p>
+                                <p class="text-xs text-gray-500">Bathroom renovation • 6 hours ago</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3">
+                            <div class="w-2 h-2 bg-yellow-500 rounded-full mt-2"></div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">Review submitted</p>
+                                <p class="text-xs text-gray-500">5-star rating for Vansh Ahir  • 8 hours ago</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6">
+                        <button onclick="postJob()" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                            Post a New Job
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Find Workers Page -->
+    <div id="workers" class="page-content hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">Find Verified Workers</h1>
+                <p class="text-gray-600">Browse and connect with skilled professionals in your area</p>
+            </div>
+
+            <!-- Search and Filters -->
+            <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Search Skills</label>
+                        <input type="text" placeholder="e.g., plumbing, electrical..." class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Location</label>
+                        <input type="text" placeholder="Enter zip code or city" class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Price Range</label>
+                        <select class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                            <option value="">Any Price</option>
+                            <option value="0-30">$0 - $30/hr</option>
+                            <option value="30-50">$30 - $50/hr</option>
+                            <option value="50-100">$50 - $100/hr</option>
+                            <option value="100+">$100+/hr</option>
+                        </select>
+                    </div>
+                    <div class="flex items-end">
+                        <button onclick="searchWorkers()" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                            Search Workers
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Worker Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Worker Card 1 -->
+                <div class="worker-card bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex items-center space-x-4 mb-4">
+                            <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center">
+                                <span class="text-white text-xl font-bold">MJ</span>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2">
+                                    <h3 class="text-lg font-semibold text-gray-900">Mike Johnson</h3>
+                                    <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                </div>
+                                <p class="text-gray-600">Licensed Plumber</p>
+                                <div class="flex items-center space-x-1 mt-1">
+                                    <span class="rating-stars">★★★★★</span>
+                                    <span class="text-sm text-gray-600">(127 reviews)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="flex flex-wrap gap-2">
+                                <span class="skill-tag text-white px-2 py-1 rounded-full text-xs">Plumbing</span>
+                                <span class="skill-tag text-white px-2 py-1 rounded-full text-xs">Pipe Repair</span>
+                                <span class="skill-tag text-white px-2 py-1 rounded-full text-xs">Installation</span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-2xl font-bold text-gray-900">$45<span class="text-sm text-gray-600">/hr</span></span>
+                            <span class="text-sm text-gray-600">Available today</span>
+                        </div>
+
+                        <p class="text-gray-600 text-sm mb-4">15+ years experience in residential and commercial plumbing. Licensed, insured, and background checked.</p>
+
+                        <div class="flex space-x-2">
+                            <button onclick="viewWorkerProfile('mike')" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-lg font-medium transition-colors">
+                                View Profile
+                            </button>
+                            <button onclick="contactWorker('mike')" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                                Contact
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Worker Card 2 -->
+                <div class="worker-card bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex items-center space-x-4 mb-4">
+                            <div class="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center">
+                                <span class="text-white text-xl font-bold">SD</span>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2">
+                                    <h3 class="text-lg font-semibold text-gray-900">Sarah Davis</h3>
+                                    <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                </div>
+                                <p class="text-gray-600">Master Electrician</p>
+                                <div class="flex items-center space-x-1 mt-1">
+                                    <span class="rating-stars">★★★★★</span>
+                                    <span class="text-sm text-gray-600">(89 reviews)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="flex flex-wrap gap-2">
+                                <span class="skill-tag text-white px-2 py-1 rounded-full text-xs">Electrical</span>
+                                <span class="skill-tag text-white px-2 py-1 rounded-full text-xs">Wiring</span>
+                                <span class="skill-tag text-white px-2 py-1 rounded-full text-xs">Panel Upgrade</span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-2xl font-bold text-gray-900">$55<span class="text-sm text-gray-600">/hr</span></span>
+                            <span class="text-sm text-gray-600">Available tomorrow</span>
+                        </div>
+
+                        <p class="text-gray-600 text-sm mb-4">Certified master electrician with 12 years experience. Specializes in residential electrical work and smart home installations.</p>
+
+                        <div class="flex space-x-2">
+                            <button onclick="viewWorkerProfile('sarah')" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-lg font-medium transition-colors">
+                                View Profile
+                            </button>
+                            <button onclick="contactWorker('sarah')" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                                Contact
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Worker Card 3 -->
+                <div class="worker-card bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex items-center space-x-4 mb-4">
+                            <div class="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center">
+                                <span class="text-white text-xl font-bold">RW</span>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2">
+                                    <h3 class="text-lg font-semibold text-gray-900">Robert Wilson</h3>
+                                    <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                </div>
+                                <p class="text-gray-600">Carpenter & Handyman</p>
+                                <div class="flex items-center space-x-1 mt-1">
+                                    <span class="rating-stars">★★★★☆</span>
+                                    <span class="text-sm text-gray-600">(156 reviews)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="flex flex-wrap gap-2">
+                                <span class="skill-tag text-white px-2 py-1 rounded-full text-xs">Carpentry</span>
+                                <span class="skill-tag text-white px-2 py-1 rounded-full text-xs">Repairs</span>
+                                <span class="skill-tag text-white px-2 py-1 rounded-full text-xs">Furniture</span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-2xl font-bold text-gray-900">$40<span class="text-sm text-gray-600">/hr</span></span>
+                            <span class="text-sm text-gray-600">Available now</span>
+                        </div>
+
+                        <p class="text-gray-600 text-sm mb-4">Skilled carpenter and general handyman. Specializes in custom furniture, home repairs, and renovation projects.</p>
+
+                        <div class="flex space-x-2">
+                            <button onclick="viewWorkerProfile('robert')" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-lg font-medium transition-colors">
+                                View Profile
+                            </button>
+                            <button onclick="contactWorker('robert')" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                                Contact
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Job Board Page -->
+    <div id="jobs" class="page-content hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">Job Board</h1>
+                <p class="text-gray-600">Find work opportunities or post jobs for local workers</p>
+            </div>
+
+            <!-- Job Filters -->
+            <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Filter Jobs</h3>
+                    <button onclick="showPostJobForm()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                        Post a Job
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                        <select class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                            <option value="">All Categories</option>
+                            <option value="plumbing">Plumbing</option>
+                            <option value="electrical">Electrical</option>
+                            <option value="carpentry">Carpentry</option>
+                            <option value="cleaning">Cleaning</option>
+                            <option value="landscaping">Landscaping</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Budget Range</label>
+                        <select class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                            <option value="">Any Budget</option>
+                            <option value="0-100">$0 - $100</option>
+                            <option value="100-500">$100 - $500</option>
+                            <option value="500-1000">$500 - $1,000</option>
+                            <option value="1000+">$1,000+</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Timeline</label>
+                        <select class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                            <option value="">Any Time</option>
+                            <option value="urgent">Urgent (Today)</option>
+                            <option value="week">This Week</option>
+                            <option value="month">This Month</option>
+                            <option value="flexible">Flexible</option>
+                        </select>
+                    </div>
+                    <div class="flex items-end">
+                        <button onclick="filterJobs()" class="w-full bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                            Apply Filters
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Job Listings -->
+            <div class="space-y-6">
+                <!-- Job Card 1 -->
+                <div class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-2 mb-2">
+                                <h3 class="text-xl font-semibold text-gray-900">Kitchen Sink Repair</h3>
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">Urgent</span>
+                            </div>
+                            <p class="text-gray-600 mb-2">Posted by Jennifer Smith • 2 hours ago</p>
+                            <p class="text-gray-700">Need a plumber to fix a leaky kitchen sink. The faucet is dripping constantly and there's water pooling under the sink. Looking for someone who can come today if possible.</p>
+                        </div>
+                        <div class="text-right ml-6">
+                            <p class="text-2xl font-bold text-green-600">$150</p>
+                            <p class="text-sm text-gray-600">Fixed Price</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center space-x-4 mb-4">
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">Plumbing</span>
+                        <span class="text-sm text-gray-600">📍 Downtown Area</span>
+                        <span class="text-sm text-gray-600">⏰ Today</span>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <span class="text-sm text-gray-600">3 proposals</span>
+                            <span class="text-sm text-gray-600">Client rating: ★★★★★</span>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button onclick="viewJobDetails('job1')" class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-lg font-medium transition-colors">
+                                View Details
+                            </button>
+                            <button onclick="submitProposal('job1')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                                Submit Proposal
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Job Card 2 -->
+                <div class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-2 mb-2">
+                                <h3 class="text-xl font-semibold text-gray-900">Bathroom Renovation</h3>
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">Flexible</span>
+                            </div>
+                            <p class="text-gray-600 mb-2">Posted by Mark Thompson • 1 day ago</p>
+                            <p class="text-gray-700">Complete bathroom renovation including tile work, plumbing, and electrical. Looking for experienced contractors who can handle multiple aspects of the project.</p>
+                        </div>
+                        <div class="text-right ml-6">
+                            <p class="text-2xl font-bold text-green-600">$3,500</p>
+                            <p class="text-sm text-gray-600">Project Budget</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center space-x-4 mb-4">
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">Renovation</span>
+                        <span class="text-sm text-gray-600">📍 Suburban Area</span>
+                        <span class="text-sm text-gray-600">⏰ Next Month</span>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <span class="text-sm text-gray-600">8 proposals</span>
+                            <span class="text-sm text-gray-600">Client rating: ★★★★☆</span>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button onclick="viewJobDetails('job2')" class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-lg font-medium transition-colors">
+                                View Details
+                            </button>
+                            <button onclick="submitProposal('job2')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                                Submit Proposal
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Job Card 3 -->
+                <div class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-2 mb-2">
+                                <h3 class="text-xl font-semibold text-gray-900">Weekly House Cleaning</h3>
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">Recurring</span>
+                            </div>
+                            <p class="text-gray-600 mb-2">Posted by Lisa Rodriguez • 3 days ago</p>
+                            <p class="text-gray-700">Looking for a reliable house cleaner for weekly service. 3-bedroom house, need someone trustworthy and detail-oriented. Long-term position available.</p>
+                        </div>
+                        <div class="text-right ml-6">
+                            <p class="text-2xl font-bold text-green-600">$80</p>
+                            <p class="text-sm text-gray-600">Per Visit</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center space-x-4 mb-4">
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">Cleaning</span>
+                        <span class="text-sm text-gray-600">📍 Residential Area</span>
+                        <span class="text-sm text-gray-600">⏰ Weekly</span>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <span class="text-sm text-gray-600">12 proposals</span>
+                            <span class="text-sm text-gray-600">Client rating: ★★★★★</span>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button onclick="viewJobDetails('job3')" class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-lg font-medium transition-colors">
+                                View Details
+                            </button>
+                            <button onclick="submitProposal('job3')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                                Submit Proposal
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Verification Page -->
+    <div id="verification" class="page-content hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">Worker Verification</h1>
+                <p class="text-gray-600">Ensure quality and trust through our comprehensive verification process</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Verification Process -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-6">Verification Steps</h3>
+                    
+                    <div class="space-y-6">
+                        <div class="flex items-start space-x-4">
+                            <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-900">Identity Verification</h4>
+                                <p class="text-sm text-gray-600">Government-issued ID verification and background check</p>
+                                <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                                    <div class="bg-green-500 h-2 rounded-full progress-bar" style="width: 100%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-4">
+                            <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-900">Skills Assessment</h4>
+                                <p class="text-sm text-gray-600">Practical skills test and certification review</p>
+                                <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                                    <div class="bg-green-500 h-2 rounded-full progress-bar" style="width: 100%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-4">
+                            <div class="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                <span class="text-white text-xs font-bold">3</span>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-900">Insurance & Licensing</h4>
+                                <p class="text-sm text-gray-600">Liability insurance and professional license verification</p>
+                                <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                                    <div class="bg-yellow-500 h-2 rounded-full progress-bar" style="width: 75%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-4">
+                            <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center flex-shrink-0">
+                                <span class="text-gray-600 text-xs font-bold">4</span>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-900">Reference Check</h4>
+                                <p class="text-sm text-gray-600">Previous client references and work history verification</p>
+                                <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                                    <div class="bg-gray-400 h-2 rounded-full progress-bar" style="width: 25%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-8">
+                        <button onclick="startVerification()" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                            Start Verification Process
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Verification Status -->
+                <div class="space-y-6">
+                    <div class="bg-white rounded-xl shadow-md p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Your Verification Status</h3>
+                        
+                        <div class="flex items-center space-x-4 mb-4">
+                            <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center">
+                                <span class="text-white text-xl font-bold">AC</span>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-900">Alex Chen</h4>
+                                <p class="text-sm text-gray-600">Handyman & General Contractor</p>
+                                <div class="flex items-center space-x-2 mt-1">
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">Verification in Progress</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Overall Progress</span>
+                                <span class="text-sm font-medium text-gray-900">75%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-3">
+                                <div class="bg-blue-500 h-3 rounded-full progress-bar" style="width: 75%"></div>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 space-y-2">
+                            <div class="flex items-center justify-between text-sm">
+                                <span class="text-gray-600">Identity Verified</span>
+                                <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                            <div class="flex items-center justify-between text-sm">
+                                <span class="text-gray-600">Skills Assessed</span>
+                                <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                            <div class="flex items-center justify-between text-sm">
+                                <span class="text-gray-600">Insurance Pending</span>
+                                <svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                                </svg>
+                            </div>
+                            <div class="flex items-center justify-between text-sm">
+                                <span class="text-gray-600">References Needed</span>
+                                <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-md p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Upload Documents</h3>
+                        
+                        <div class="space-y-4">
+                            <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                                <svg class="w-8 h-8 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                                </svg>
+                                <p class="text-sm text-gray-600 mb-2">Insurance Certificate</p>
+                                <button onclick="uploadDocument('insurance')" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                    Click to upload
+                                </button>
+                            </div>
+
+                            <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                                <svg class="w-8 h-8 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                                </svg>
+                                <p class="text-sm text-gray-600 mb-2">Professional License</p>
+                                <button onclick="uploadDocument('license')" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                    Click to upload
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-md p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Verification Benefits</h3>
+                        
+                        <div class="space-y-3">
+                            <div class="flex items-center space-x-3">
+                                <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <span class="text-sm text-gray-700">Higher visibility in search results</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <span class="text-sm text-gray-700">Trusted badge on your profile</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <span class="text-sm text-gray-700">Access to premium job listings</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <span class="text-sm text-gray-700">Increased client trust and bookings</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Page -->
+    <div id="profile" class="page-content hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">My Profile</h1>
+                <p class="text-gray-600">Manage your professional profile and settings</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Profile Info -->
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="bg-white rounded-xl shadow-md p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Basic Information</h3>
+                        
+                        <form onsubmit="updateProfile(event)">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+                                    <input type="text" value="Alex" class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+                                    <input type="text" value="Chen" class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                                    <input type="email" value="alex.chen@email.com" class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                                    <input type="tel" value="(555) 123-4567" class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Professional Title</label>
+                                    <input type="text" value="Handyman & General Contractor" class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Bio</label>
+                                    <textarea rows="4" class="w-full border border-gray-300 rounded-lg px-3 py-2">Experienced handyman with 8+ years in residential repairs and improvements. Specializing in carpentry, plumbing, electrical work, and general maintenance. Licensed, insured, and committed to quality workmanship.</textarea>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                                Update Profile
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Skills & Services -->
+                    <div class="bg-white rounded-xl shadow-md p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Skills & Services</h3>
+                        
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Add Skills</label>
+                            <div class="flex space-x-2">
+                                <input type="text" placeholder="Enter a skill..." class="flex-1 border border-gray-300 rounded-lg px-3 py-2">
+                                <button onclick="addSkill()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                                    Add
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="skill-tag text-white px-3 py-1 rounded-full text-sm flex items-center space-x-2">
+                                <span>Carpentry</span>
+                                <button onclick="removeSkill('carpentry')" class="text-white hover:text-red-200">×</button>
+                            </span>
+                            <span class="skill-tag text-white px-3 py-1 rounded-full text-sm flex items-center space-x-2">
+                                <span>Plumbing</span>
+                                <button onclick="removeSkill('plumbing')" class="text-white hover:text-red-200">×</button>
+                            </span>
+                            <span class="skill-tag text-white px-3 py-1 rounded-full text-sm flex items-center space-x-2">
+                                <span>Electrical</span>
+                                <button onclick="removeSkill('electrical')" class="text-white hover:text-red-200">×</button>
+                            </span>
+                            <span class="skill-tag text-white px-3 py-1 rounded-full text-sm flex items-center space-x-2">
+                                <span>Painting</span>
+                                <button onclick="removeSkill('painting')" class="text-white hover:text-red-200">×</button>
+                            </span>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Hourly Rate</label>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-gray-600">$</span>
+                                <input type="number" value="45" class="w-20 border border-gray-300 rounded-lg px-3 py-2">
+                                <span class="text-gray-600">per hour</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Portfolio -->
+                    <div class="bg-white rounded-xl shadow-md p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-gray-900">Portfolio</h3>
+                            <button onclick="addPortfolioItem()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                                Add Project
+                            </button>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <div class="w-full h-32 bg-gray-200 rounded-lg mb-3 flex items-center justify-center">
+                                    <span class="text-gray-500">Kitchen Renovation</span>
+                                </div>
+                                <h4 class="font-medium text-gray-900">Kitchen Cabinet Install</h4>
+                                <p class="text-sm text-gray-600">Complete kitchen cabinet installation and countertop work</p>
+                            </div>
+                            
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <div class="w-full h-32 bg-gray-200 rounded-lg mb-3 flex items-center justify-center">
+                                    <span class="text-gray-500">Bathroom Repair</span>
+                                </div>
+                                <h4 class="font-medium text-gray-900">Bathroom Tile Work</h4>
+                                <p class="text-sm text-gray-600">Tile replacement and waterproofing in master bathroom</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="space-y-6">
+                    <!-- Profile Summary -->
+                    <div class="bg-white rounded-xl shadow-md p-6">
+                        <div class="text-center mb-4">
+                            <div class="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <span class="text-white text-2xl font-bold">KT</span>
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-900">Kirtan Tandel</h3>
+                            <p class="text-gray-600">Handyman & General Contractor</p>
+                            <div class="flex items-center justify-center space-x-1 mt-2">
+                                <span class="rating-stars">★★★★☆</span>
+                                <span class="text-sm text-gray-600">(23 reviews)</span>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Profile Views</span>
+                                <span class="font-medium text-gray-900">156</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Jobs Completed</span>
+                                <span class="font-medium text-gray-900">47</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Response Rate</span>
+                                <span class="font-medium text-gray-900">98%</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Member Since</span>
+                                <span class="font-medium text-gray-900">Jan 2023</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Reviews -->
+                    <div class="bg-white rounded-xl shadow-md p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Recent Reviews</h3>
+                        
+                        <div class="space-y-4">
+                            <div class="border-b border-gray-100 pb-3">
+                                <div class="flex items-center space-x-1 mb-1">
+                                    <span class="rating-stars text-sm">★★★★★</span>
+                                </div>
+                                <p class="text-sm text-gray-700">"Excellent work on my kitchen repair. Very professional and clean."</p>
+                                <p class="text-xs text-gray-500 mt-1">- Jennifer S.</p>
+                            </div>
+                            
+                            <div class="border-b border-gray-100 pb-3">
+                                <div class="flex items-center space-x-1 mb-1">
+                                    <span class="rating-stars text-sm">★★★★☆</span>
+                                </div>
+                                <p class="text-sm text-gray-700">"Good quality work, arrived on time. Would recommend."</p>
+                                <p class="text-xs text-gray-500 mt-1">- Mark T.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Account Settings -->
+                    <div class="bg-white rounded-xl shadow-md p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Account Settings</h3>
+                        
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-700">Email Notifications</span>
+                                <button onclick="toggleSetting('email')" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition-colors">
+                                    On
+                                </button>
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-700">SMS Alerts</span>
+                                <button onclick="toggleSetting('sms')" class="bg-gray-400 hover:bg-gray-500 text-white px-3 py-1 rounded text-sm transition-colors">
+                                    Off
+                                </button>
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-700">Profile Visibility</span>
+                                <button onclick="toggleSetting('visibility')" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition-colors">
+                                    Public
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <button onclick="saveAccountSettings()" class="w-full mt-4 bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                            Save Settings
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="notification" class="fixed top-4 right-4 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg notification hidden">
+        <p id="notificationText"></p>
+    </div>
+
+    <script>
+        // Page Navigation
+        function showPage(pageId) {
+            // Hide all pages
+            const pages = document.querySelectorAll('.page-content');
+            pages.forEach(page => page.classList.add('hidden'));
+            
+            // Show selected page
+            document.getElementById(pageId).classList.remove('hidden');
+            document.getElementById(pageId).classList.add('fade-in');
+            
+            // Update navigation
+            const navButtons = document.querySelectorAll('.nav-btn');
+            navButtons.forEach(btn => btn.classList.remove('text-blue-600', 'font-semibold'));
+            event.target.classList.add('text-blue-600', 'font-semibold');
+        }
+
+        // Notification System
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notificationText');
+            
+            notificationText.textContent = message;
+            notification.classList.remove('hidden');
+            
+            setTimeout(() => {
+                notification.classList.add('hidden');
+            }, 3000);
+        }
+
+        // Dashboard Functions
+        function postJob() {
+            showNotification('Opening job posting form...');
+        }
+
+        // Worker Search Functions
+        function searchWorkers() {
+            showNotification('Searching for workers matching your criteria...');
+        }
+
+        function viewWorkerProfile(workerId) {
+            showNotification(`Opening ${workerId}'s detailed profile...`);
+        }
+
+        function contactWorker(workerId) {
+            showNotification(`Opening chat with ${workerId}...`);
+        }
+
+        // Job Board Functions
+        function showPostJobForm() {
+            showNotification('Opening job posting form...');
+        }
+
+        function filterJobs() {
+            showNotification('Applying job filters...');
+        }
+
+        function viewJobDetails(jobId) {
+            showNotification(`Opening details for ${jobId}...`);
+        }
+
+        function submitProposal(jobId) {
+            showNotification(`Opening proposal form for ${jobId}...`);
+        }
+
+        // Verification Functions
+        function startVerification() {
+            showNotification('Starting verification process...');
+        }
+
+        function uploadDocument(docType) {
+            showNotification(`Opening file picker for ${docType} document...`);
+        }
+
+        // Profile Functions
+        function updateProfile(event) {
+            event.preventDefault();
+            showNotification('Profile updated successfully!');
+        }
+
+        function addSkill() {
+            showNotification('Skill added to your profile!');
+        }
+
+        function removeSkill(skill) {
+            showNotification(`${skill} skill removed from profile`);
+        }
+
+        function addPortfolioItem() {
+            showNotification('Opening portfolio item form...');
+        }
+
+        function toggleSetting(setting) {
+            const button = event.target;
+            if (button.textContent === 'On' || button.textContent === 'Public') {
+                button.textContent = button.textContent === 'On' ? 'Off' : 'Private';
+                button.className = 'bg-gray-400 hover:bg-gray-500 text-white px-3 py-1 rounded text-sm transition-colors';
+            } else {
+                button.textContent = button.textContent === 'Off' ? 'On' : 'Public';
+                button.className = 'bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition-colors';
+            }
+            showNotification(`${setting} setting updated`);
+        }
+
+        function saveAccountSettings() {
+            showNotification('Account settings saved successfully!');
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show dashboard by default
+            showPage('dashboard');
+            
+            // Simulate real-time updates for verification progress
+            setInterval(() => {
+                const progressBars = document.querySelectorAll('.progress-bar');
+                progressBars.forEach(bar => {
+                    const currentWidth = parseInt(bar.style.width) || 0;
+                    if (currentWidth < 100 && Math.random() > 0.8) {
+                        bar.style.width = Math.min(100, currentWidth + 5) + '%';
+                    }
+                });
+            }, 10000);
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98549bc785ce46fc',t:'MTc1ODkwOTA3OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
